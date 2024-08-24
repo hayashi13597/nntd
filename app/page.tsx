@@ -89,11 +89,11 @@ export default function Home() {
                     "from-yellow-400 to-yellow-600",
                     {
                       "from-rose-500 to-red-700": item.role === 1,
-                      "from-blue-400 to-blue-600": item.role === 2,
-                      "from-red-400 to-red-600": item.role === 3,
-                      "from-pink-500 to-purple-500": item.role === 4,
-                      "from-blue-500 to-green-500": item.role === 5,
-                      "from-cyan-500 to-blue-500": item.role === 6,
+                      "from-green-300 to-indigo-500": item.role === 2,
+                      "from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%": item.role === 3,
+                      "from-indigo-500 via-purple-500 to-pink-500": item.role === 4,
+                      "from-cyan-500 to-blue-500": item.role === 5,
+                      "text-black": item.role === 6,
                     },
                     "text-transparent bg-clip-text"
                   )}`}
