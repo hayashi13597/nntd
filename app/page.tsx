@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import Modal from "@/components/Modal";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import { useGlobalContext } from "@/contexts/LoadingContext";
 
 export type dataTypes = {
   _id?: string;
@@ -23,11 +24,12 @@ export type dataTypes = {
 
 export default function Home() {
   const [data, setData] = useState<dataTypes[]>([]);
+  const { setLoading } = useGlobalContext();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/api/users");
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users`);
         setData(res.data);
       } catch (error) {
         console.log(error);
@@ -39,12 +41,16 @@ export default function Home() {
   const handleDelete = async (id: string) => {
     const confirm = window.confirm("Bạn có chắc chắn muốn xóa?");
     if (!confirm) return;
+    setLoading(true);
     try {
-      await axios.delete(`/api/users?id=${id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/users?id=${id}`);
       setData((prev) => prev.filter((item) => item._id !== id));
       toast.success("Xóa thành công");
     } catch (error) {
       console.log(error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -7,6 +7,7 @@ import { dataTypes } from "@/app/page";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useGlobalContext } from "@/contexts/LoadingContext";
 
 type ModalClientProps = {
   title: string;
@@ -18,6 +19,7 @@ type ModalClientProps = {
 const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
   const [nameInGame, setNameInGame] = useState(data?.nameInGame || "");
   const [nameZalo, setNameZalo] = useState(data?.nameZalo || "");
+  const { setLoading } = useGlobalContext();
 
   const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = event.target;
@@ -32,9 +34,13 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
     event.preventDefault();
     const nameInGame = (event.target as HTMLFormElement).nameInGame.value;
     const nameZalo = (event.target as HTMLFormElement).nameZalo.value;
+    setLoading(true);
     if (type === "add") {
       try {
-        const res = await axios.post("/api/users", { nameInGame, nameZalo });
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/users`,
+          { nameInGame, nameZalo }
+        );
         if (res.status === 201) {
           toast.success("Thêm thành công");
         }
@@ -42,6 +48,9 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
       } catch (error) {
         console.log(error);
         toast.error("Thêm thất bại");
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     } else {
       setData?.((prev) =>
@@ -54,10 +63,13 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
       );
 
       try {
-        const res = await axios.put(`/api/users?id=${data?._id}`, {
-          nameInGame,
-          nameZalo,
-        });
+        const res = await axios.put(
+          `${process.env.NEXT_PUBLIC_API_URL}/users?id=${data?._id}`,
+          {
+            nameInGame,
+            nameZalo,
+          }
+        );
 
         if (res.status === 200) {
           toast.success("Sửa thành công");
@@ -65,6 +77,9 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
       } catch (error) {
         console.log(error);
         toast.error("Sửa thất bại");
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
     }
   };
