@@ -8,18 +8,37 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useGlobalContext } from "@/contexts/LoadingContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { sortData } from "@/lib/utils";
+import { roleObject } from "@/constants";
 
 type ModalClientProps = {
   title: string;
   type: string;
   data?: dataTypes;
   setData?: React.Dispatch<React.SetStateAction<dataTypes[]>>;
+  isAdmin?: boolean;
 };
 
-const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
+const ModalClient = ({
+  title,
+  type,
+  data,
+  setData,
+  isAdmin,
+}: ModalClientProps) => {
   const [nameInGame, setNameInGame] = useState(data?.nameInGame || "");
   const [nameZalo, setNameZalo] = useState(data?.nameZalo || "");
   const { setLoading } = useGlobalContext();
+  const [selectedValue, setSelectedValue] = useState(
+    data?.role.toString() || "6"
+  );
 
   const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = event.target;
@@ -39,12 +58,15 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
       try {
         const res = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/users`,
-          { nameInGame, nameZalo }
+          { nameInGame, nameZalo, role: selectedValue, order: 999 }
         );
         if (res.status === 201) {
           toast.success("Thêm thành công");
         }
-        setData?.((prev) => [...prev, res.data.user]);
+        setData?.((prev) => {
+          let rawData = [...prev, res.data.user];
+          return sortData(rawData);
+        });
       } catch (error) {
         console.log(error);
         toast.error("Thêm thất bại");
@@ -53,27 +75,27 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
         setLoading(false);
       }
     } else {
-      setData?.((prev) =>
-        prev.map((item) => {
-          if (item._id === data?._id) {
-            return { _id: item._id, nameInGame, nameZalo };
-          }
-          return item;
-        })
-      );
-
       try {
         const res = await axios.put(
           `${process.env.NEXT_PUBLIC_API_URL}/users?id=${data?._id}`,
           {
             nameInGame,
             nameZalo,
+            role: Number(selectedValue),
+            order: data?.order,
           }
         );
 
         if (res.status === 200) {
           toast.success("Sửa thành công");
         }
+
+        setData?.((prev) => {
+          let rawData = [...prev];
+          const index = rawData.findIndex((item) => item._id === data?._id);
+          rawData[index] = res.data.user;
+          return sortData(rawData);
+        });
       } catch (error) {
         console.log(error);
         toast.error("Sửa thất bại");
@@ -82,6 +104,10 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
         setLoading(false);
       }
     }
+  };
+
+  const handleOnChangeSelect = (value: string) => {
+    setSelectedValue(value);
   };
 
   return (
@@ -104,6 +130,22 @@ const ModalClient = ({ title, type, data, setData }: ModalClientProps) => {
           onChange={handleChangeInput}
         />
       </div>
+      {isAdmin && (
+        <div className="mb-4">
+          <Select value={selectedValue} onValueChange={handleOnChangeSelect}>
+            <SelectTrigger>
+              <SelectValue placeholder="Chức vụ" />
+            </SelectTrigger>
+            <SelectContent>
+              {roleObject.map((role) => (
+                <SelectItem key={role.value} value={`${role.value}`}>
+                  {role.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
       <DialogTrigger asChild>
         <Button type="submit">{title}</Button>
       </DialogTrigger>

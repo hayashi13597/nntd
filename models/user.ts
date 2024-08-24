@@ -4,6 +4,8 @@ const userSchema = new Schema(
   {
     nameInGame: { type: String, required: true },
     nameZalo: { type: String, required: true },
+    role: { type: Number, default: 6 },
+    order: { type: Number, default: 0 },
   },
   {
     timestamps: true,

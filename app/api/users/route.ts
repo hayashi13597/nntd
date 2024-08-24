@@ -3,10 +3,10 @@ import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 10;
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const { nameInGame, nameZalo } = await request.json();
+  const { nameInGame, nameZalo, role, order } = await request.json();
 
   if (!nameInGame || !nameZalo) {
     return NextResponse.json(
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
   await connectMongoDB();
 
-  const user = await User.create({ nameInGame, nameZalo });
+  const user = await User.create({ nameInGame, nameZalo, role, order });
 
   return NextResponse.json({ message: "User created", user }, { status: 201 });
 }
@@ -46,7 +46,7 @@ export async function DELETE(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   const id = request.nextUrl.searchParams.get("id");
-  const { nameInGame, nameZalo } = await request.json();
+  const { nameInGame, nameZalo, role, order } = await request.json();
 
   if (!id || !nameInGame || !nameZalo) {
     return NextResponse.json(
@@ -57,7 +57,15 @@ export async function PUT(request: NextRequest) {
 
   await connectMongoDB();
 
-  await User.findByIdAndUpdate(id, { nameInGame, nameZalo });
+  await User.findByIdAndUpdate(id, {
+    nameInGame,
+    nameZalo,
+    role,
+    order,
+  });
 
-  return NextResponse.json({ message: "User updated" });
+  // return updated user
+  const updatedUser = await User.findById(id);
+
+  return NextResponse.json({ message: "User updated", user: updatedUser });
 }

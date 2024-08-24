@@ -16,9 +16,10 @@ type ModalProps = {
   type: string;
   data?: dataTypes;
   setData?: React.Dispatch<React.SetStateAction<dataTypes[]>>;
+  isAdmin?: boolean;
 };
 
-const Modal = ({ title, type, data, setData }: ModalProps) => {
+const Modal = ({ title, type, data, setData, isAdmin }: ModalProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -33,6 +34,7 @@ const Modal = ({ title, type, data, setData }: ModalProps) => {
             type={type}
             data={data}
             setData={setData}
+            isAdmin={isAdmin}
           />
         </DialogHeader>
       </DialogContent>

@@ -15,11 +15,16 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useGlobalContext } from "@/contexts/LoadingContext";
+import SearchComponent from "@/components/SearchComponent";
+import { cn, sortData } from "@/lib/utils";
+import { roleObject } from "@/constants";
 
 export type dataTypes = {
   _id?: string;
   nameInGame: string;
   nameZalo: string;
+  role: number;
+  order: number;
 };
 
 export default function Home() {
@@ -30,7 +35,8 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users`);
-        setData(res.data);
+        const sortedData = sortData(res.data);
+        setData(sortedData);
       } catch (error) {
         console.log(error);
       }
@@ -55,30 +61,59 @@ export default function Home() {
   };
 
   return (
-    <main className="mt-5 w-10/12 mx-auto">
-      <Modal title="Thêm" type="add" setData={setData} />
+    <main className="mt-5 w-10/12 mx-auto mb-5">
+      <div className="flex justify-between items-center mb-5">
+        <Modal title="Thêm" type="add" setData={setData} />
+        <SearchComponent setData={setData} />
+      </div>
       <Table>
-        <TableCaption>Danh sách thành viên S19 Tái Sinh</TableCaption>
+        <TableCaption>
+          Danh sách thành viên S19 TMG - Ngự Uyển Viên
+        </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="text-center">Tên Ingame</TableHead>
             <TableHead className="text-center">Tên Zalo</TableHead>
+            <TableHead className="text-center">Chức Vụ</TableHead>
             <TableHead className="text-center"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((item) => (
-            <TableRow key={item._id}>
-              <TableCell className="text-center">{item.nameInGame}</TableCell>
-              <TableCell className="text-center">{item.nameZalo}</TableCell>
-              <TableCell className="flex justify-center items-center gap-3">
-                <Modal title="Sửa" type="edit" data={item} setData={setData} />
-                <Button onClick={() => handleDelete(item._id || "")}>
-                  Xóa
-                </Button>
+          {data.length > 0 ? (
+            data.map((item) => (
+              <TableRow key={item._id}>
+                <TableCell className="text-center">{item.nameInGame}</TableCell>
+                <TableCell className="text-center">{item.nameZalo}</TableCell>
+                <TableCell
+                  className={cn([
+                    "text-center bg-gradient-to-r text-transparent bg-clip-text",
+                    `${
+                      roleObject.find((role) => role.value === item.role)?.color
+                    }`,
+                  ])}
+                >
+                  {roleObject.find((role) => role.value === item.role)?.label}
+                </TableCell>
+                <TableCell className="flex justify-center items-center gap-3">
+                  <Modal
+                    title="Sửa"
+                    type="edit"
+                    data={item}
+                    setData={setData}
+                  />
+                  <Button onClick={() => handleDelete(item._id || "")}>
+                    Xóa
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={3} className="text-center">
+                Không có dữ liệu
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </main>
