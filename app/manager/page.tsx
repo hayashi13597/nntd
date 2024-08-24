@@ -104,19 +104,24 @@ export default function Manager() {
           <TableBody>
             {data.length > 0 ? (
               data.map((item) => (
-                <Reorder.Item key={item._id} value={item} as="tr">
+                <Reorder.Item key={item._id} value={item} as="tr" className="border-b">
                   <TableCell className="text-center">
                     {item.nameInGame}
                   </TableCell>
                   <TableCell className="text-center">{item.nameZalo}</TableCell>
                   <TableCell
-                    className={cn([
-                      "text-center bg-gradient-to-r text-transparent bg-clip-text",
-                      `${
-                        roleObject.find((role) => role.value === item.role)
-                          ?.color
-                      }`,
-                    ])}
+                    className={`text-center bg-gradient-to-r ${cn(
+                      "from-yellow-400 to-yellow-600",
+                      {
+                        "from-rose-500 to-red-700": item.role === 1,
+                        "from-blue-400 to-blue-600": item.role === 2,
+                        "from-red-400 to-red-600": item.role === 3,
+                        "from-pink-500 to-purple-500": item.role === 4,
+                        "from-blue-500 to-green-500": item.role === 5,
+                        "from-cyan-500 to-blue-500": item.role === 6,
+                      },
+                      "text-transparent bg-clip-text"
+                    )}`}
                   >
                     {roleObject.find((role) => role.value === item.role)?.label}
                   </TableCell>
