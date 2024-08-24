@@ -2,6 +2,9 @@ import connectMongoDB from "@/lib/mongodb";
 import User from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 
+export const maxDuration = 10;
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   const { nameInGame, nameZalo } = await request.json();
 
