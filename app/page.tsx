@@ -18,6 +18,7 @@ import { useGlobalContext } from "@/contexts/LoadingContext";
 import SearchComponent from "@/components/SearchComponent";
 import { cn, sortData } from "@/lib/utils";
 import { roleObject } from "@/constants";
+import SkeletonComponent from "@/components/SkeletonComponent";
 
 export type dataTypes = {
   _id?: string;
@@ -66,62 +67,70 @@ export default function Home() {
         <Modal title="Thêm" type="add" setData={setData} />
         <SearchComponent setData={setData} />
       </div>
-      <Table>
-        <TableCaption>
-          Danh sách thành viên S19 TMG - Ngự Uyển Viên
-        </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-center">Tên Ingame</TableHead>
-            <TableHead className="text-center">Tên Zalo</TableHead>
-            <TableHead className="text-center">Chức Vụ</TableHead>
-            <TableHead className="text-center"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.length > 0 ? (
-            data.map((item) => (
-              <TableRow key={item._id}>
-                <TableCell className="text-center">{item.nameInGame}</TableCell>
-                <TableCell className="text-center">{item.nameZalo}</TableCell>
-                <TableCell
-                  className={`text-center bg-gradient-to-r ${cn(
-                    "from-yellow-400 to-yellow-600",
-                    {
-                      "from-rose-500 to-red-700": item.role === 1,
-                      "from-green-300 to-indigo-500": item.role === 2,
-                      "from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%": item.role === 3,
-                      "from-indigo-500 via-purple-500 to-pink-500": item.role === 4,
-                      "from-cyan-500 to-blue-500": item.role === 5,
-                      "text-black": item.role === 6,
-                    },
-                    "text-transparent bg-clip-text"
-                  )}`}
-                >
-                  {roleObject.find((role) => role.value === item.role)?.label}
-                </TableCell>
-                <TableCell className="flex justify-center items-center gap-3">
-                  <Modal
-                    title="Sửa"
-                    type="edit"
-                    data={item}
-                    setData={setData}
-                  />
-                  <Button onClick={() => handleDelete(item._id || "")}>
-                    Xóa
-                  </Button>
+      {data.length === 0 ? (
+        <SkeletonComponent />
+      ) : (
+        <Table>
+          <TableCaption>
+            Danh sách thành viên S19 TMG - Ngự Uyển Viên
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">Tên Ingame</TableHead>
+              <TableHead className="text-center">Tên Zalo</TableHead>
+              <TableHead className="text-center">Chức Vụ</TableHead>
+              <TableHead className="text-center"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.length > 0 ? (
+              data.map((item) => (
+                <TableRow key={item._id}>
+                  <TableCell className="text-center">
+                    {item.nameInGame}
+                  </TableCell>
+                  <TableCell className="text-center">{item.nameZalo}</TableCell>
+                  <TableCell
+                    className={`text-center bg-gradient-to-r ${cn(
+                      "from-yellow-400 to-yellow-600",
+                      {
+                        "from-rose-500 to-red-700": item.role === 1,
+                        "from-green-300 to-indigo-500": item.role === 2,
+                        "from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%":
+                          item.role === 3,
+                        "from-indigo-500 via-purple-500 to-pink-500":
+                          item.role === 4,
+                        "from-cyan-500 to-blue-500": item.role === 5,
+                        "text-black": item.role === 6,
+                      },
+                      "text-transparent bg-clip-text"
+                    )}`}
+                  >
+                    {roleObject.find((role) => role.value === item.role)?.label}
+                  </TableCell>
+                  <TableCell className="flex justify-center items-center gap-3">
+                    <Modal
+                      title="Sửa"
+                      type="edit"
+                      data={item}
+                      setData={setData}
+                    />
+                    <Button onClick={() => handleDelete(item._id || "")}>
+                      Xóa
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">
+                  Không có dữ liệu
                 </TableCell>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center">
-                Không có dữ liệu
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            )}
+          </TableBody>
+        </Table>
+      )}
     </main>
   );
 }
