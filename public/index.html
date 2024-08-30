@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cow Race Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: #87ceeb;
+      }
+      #race-track {
+        position: relative;
+        width: 50%;
+        margin: 50px auto;
+        height: 490px;
+        background: url("./co.jpg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+      .cow {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        /* background-color: yellow; */
+        top: 0;
+      }
+      .cow img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      #start-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      #reset-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Cow Race Game</h1>
+    <div id="race-track">
+      <div id="cow1" class="cow" style="left: 0; top: 0">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow2" class="cow" style="left: 0; top: 50px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow3" class="cow" style="left: 0; top: 100px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow4" class="cow" style="left: 0; top: 150px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow5" class="cow" style="left: 0; top: 200px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow6" class="cow" style="left: 0; top: 250px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow7" class="cow" style="left: 0; top: 300px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow8" class="cow" style="left: 0; top: 350px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow9" class="cow" style="left: 0; top: 400px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+      <div id="cow10" class="cow" style="left: 0; top: 440px">
+        <img src="./running-cow.gif" alt="" />
+      </div>
+    </div>
+    <button id="start-button">Start Race</button>
+    <button id="reset-button">Reset</button>
+
+    <script>
+      document
+        .getElementById("start-button")
+        .addEventListener("click", startRace);
+
+      document
+        .getElementById("reset-button")
+        .addEventListener("click", resetRace);
+
+      function resetRace() {
+        let cows = document.getElementsByClassName("cow");
+        for (let i = 0; i < cows.length; i++) {
+          cows[i].style.left = 0;
+        }
+      }
+
+      function startRace() {
+        let cows = document.getElementsByClassName("cow");
+        let raceOver = false;
+
+        for (let i = 0; i < cows.length; i++) {
+          moveCow(cows[i]);
+        }
+
+        function moveCow(cow) {
+          let cowInterval = setInterval(function () {
+            if (raceOver) return;
+
+            let currentLeft = parseInt(cow.style.left);
+            let moveDistance = Math.random() * 5 + Math.random() * 5 + 2;
+            cow.style.left = currentLeft + moveDistance + "px";
+
+            if (
+              currentLeft + moveDistance >=
+              document.getElementById("race-track").offsetWidth -
+                cow.offsetWidth
+            ) {
+              raceOver = true;
+              clearInterval(cowInterval);
+              alert(cow.id + " wins!");
+            }
+          }, 50);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -62,18 +62,12 @@ export default function Manager() {
     }
   };
 
-  const handleReorder = async (newData: dataTypes[]) => {
-    // update order
-    const updatedData = newData.map((item, index) => ({
-      ...item,
-      order: index,
-    }));
-    setData(updatedData);
+  const handleUpdateReOrder = async (newData: dataTypes[]) => {
     setLoading(true);
     try {
       await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/users/order`,
-        updatedData
+        newData
       );
     } catch (error) {
       console.log(error);
@@ -81,6 +75,16 @@ export default function Manager() {
     } finally {
       setLoading(false);
     }
+  }
+
+  const handleReorder = async (newData: dataTypes[]) => {
+    // update order
+    const updatedData = newData.map((item, index) => ({
+      ...item,
+      order: index,
+    }));
+    setData(updatedData);
+    handleUpdateReOrder(updatedData);
   };
 
   return (
